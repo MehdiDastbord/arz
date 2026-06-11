@@ -37,13 +37,11 @@ body{
     -webkit-backdrop-filter:blur(20px);
 
     border:1px solid rgba(255,255,255,.15);
-
     border-radius:30px;
 
     padding:25px;
 
-    box-shadow:
-    0 20px 50px rgba(0,0,0,.4);
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
 }
 
 .title{
@@ -55,13 +53,9 @@ body{
 
 .currency{
     background:rgba(255,255,255,.08);
-
     border-radius:22px;
-
     padding:18px;
-
     margin-bottom:15px;
-
     transition:.3s;
 }
 
@@ -125,8 +119,6 @@ body{
     color:#ffb4b4;
 }
 
-/* Credit */
-
 .credit{
     text-align:center;
     margin-top:22px;
@@ -139,7 +131,6 @@ body{
 .credit span{
     display:block;
     margin-top:6px;
-
     font-size:19px;
     font-weight:900;
 
@@ -195,6 +186,20 @@ body{
         </div>
     </div>
 
+    <div class="currency">
+        <div class="name">
+            🇴🇲 ریال عمان
+        </div>
+
+        <div class="value" id="omr">
+            ...
+        </div>
+
+        <div class="unit">
+            تومان
+        </div>
+    </div>
+
     <div class="time" id="time">
         در حال دریافت اطلاعات...
     </div>
@@ -236,6 +241,11 @@ async function loadPrices(){
         if(data.aed_sell){
             document.getElementById("aed").textContent =
             formatPrice(data.aed_sell.value);
+        }
+
+        if(data.omr){
+            document.getElementById("omr").textContent =
+            formatPrice(data.omr.value);
         }
 
         document.getElementById("time").textContent =
