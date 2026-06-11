@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>قیمت لحظه‌ای ارز</title>
 
 <style>
@@ -20,27 +19,19 @@ body{
     justify-content:center;
     align-items:center;
     padding:20px;
-
-    background:
-    radial-gradient(circle at top,#1e40af,#0f172a 50%),
-    #020617;
-
-    color:white;
+    background:radial-gradient(circle at top,#1e40af,#0f172a 50%),#020617;
+    color:#fff;
 }
 
 .card{
     width:100%;
     max-width:430px;
-
     background:rgba(255,255,255,.08);
     backdrop-filter:blur(20px);
     -webkit-backdrop-filter:blur(20px);
-
     border:1px solid rgba(255,255,255,.15);
     border-radius:30px;
-
     padding:25px;
-
     box-shadow:0 20px 50px rgba(0,0,0,.4);
 }
 
@@ -89,30 +80,14 @@ body{
 .btn{
     width:100%;
     margin-top:20px;
-
     border:none;
     border-radius:18px;
-
     padding:15px;
-
     font-size:17px;
     font-weight:700;
-
     cursor:pointer;
-
-    background:linear-gradient(
-        135deg,
-        #2563eb,
-        #06b6d4
-    );
-
-    color:white;
-
-    transition:.3s;
-}
-
-.btn:hover{
-    transform:translateY(-2px);
+    background:linear-gradient(135deg,#2563eb,#06b6d4);
+    color:#fff;
 }
 
 .error{
@@ -124,8 +99,6 @@ body{
     margin-top:22px;
     color:rgba(255,255,255,.65);
     font-size:14px;
-    font-weight:500;
-    letter-spacing:.5px;
 }
 
 .credit span{
@@ -133,71 +106,34 @@ body{
     margin-top:6px;
     font-size:19px;
     font-weight:900;
-
-    background:linear-gradient(
-        90deg,
-        #60a5fa,
-        #22d3ee,
-        #38bdf8
-    );
-
+    background:linear-gradient(90deg,#60a5fa,#22d3ee,#38bdf8);
     -webkit-background-clip:text;
     -webkit-text-fill-color:transparent;
-
-    text-shadow:
-    0 0 25px rgba(34,211,238,.35);
 }
 </style>
-
 </head>
 <body>
 
 <div class="card">
 
-    <div class="title">
-        💱 قیمت لحظه‌ای ارز
+    <div class="title">💱 قیمت لحظه‌ای ارز</div>
+
+    <div class="currency">
+        <div class="name">💵 دلار آمریکا</div>
+        <div class="value" id="usd">...</div>
+        <div class="unit">تومان</div>
     </div>
 
     <div class="currency">
-        <div class="name">
-            💵 دلار آمریکا
-        </div>
-
-        <div class="value" id="usd">
-            ...
-        </div>
-
-        <div class="unit">
-            تومان
-        </div>
+        <div class="name">🇦🇪 درهم امارات</div>
+        <div class="value" id="aed">...</div>
+        <div class="unit">تومان</div>
     </div>
 
     <div class="currency">
-        <div class="name">
-            🇦🇪 درهم امارات
-        </div>
-
-        <div class="value" id="aed">
-            ...
-        </div>
-
-        <div class="unit">
-            تومان
-        </div>
-    </div>
-
-    <div class="currency">
-        <div class="name">
-            🇴🇲 ریال عمان
-        </div>
-
-        <div class="value" id="omr">
-            ...
-        </div>
-
-        <div class="unit">
-            تومان
-        </div>
+        <div class="name">🇴🇲 ریال عمان</div>
+        <div class="value" id="omr">...</div>
+        <div class="unit">تومان</div>
     </div>
 
     <div class="time" id="time">
@@ -216,7 +152,6 @@ body{
 </div>
 
 <script>
-
 const API_KEY = "freerSZGp1p2Is63Q1ZTzqDRqSEGdnMx";
 
 function formatPrice(value){
@@ -252,23 +187,16 @@ async function loadPrices(){
         "آخرین بروزرسانی: " +
         new Date().toLocaleTimeString("fa-IR");
 
-    }
-
-    catch(error){
-
-        console.error(error);
+    }catch(error){
 
         document.getElementById("time").innerHTML =
         '<span class="error">خطا در دریافت اطلاعات</span>';
 
     }
-
 }
 
 loadPrices();
-
 setInterval(loadPrices,60000);
-
 </script>
 
 </body>
