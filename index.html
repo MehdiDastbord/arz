@@ -3,321 +3,895 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>قیمت لحظه‌ای بازار</title>
+
+<title>قیمت لحظه‌ای ارز</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
 
 body{
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;
-min-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-padding:20px;
-background:radial-gradient(circle at top,#1e40af,#0f172a 50%),#020617;
-color:#fff;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;
+    min-height:100vh;
+    color:#fff;
+    overflow-x:hidden;
+
+    background:
+        radial-gradient(circle at 10% 0%,rgba(37,99,235,.35),transparent 30%),
+        radial-gradient(circle at 90% 20%,rgba(6,182,212,.25),transparent 30%),
+        radial-gradient(circle at 50% 100%,rgba(124,58,237,.25),transparent 35%),
+        #020617;
 }
 
-.card{
-width:100%;
-max-width:430px;
-background:rgba(255,255,255,.08);
-backdrop-filter:blur(20px);
-border:1px solid rgba(255,255,255,.15);
-border-radius:30px;
-padding:25px;
-box-shadow:0 20px 50px rgba(0,0,0,.4);
+/* پس زمینه */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:
+        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:40px 40px;
+    mask-image:linear-gradient(to bottom,black,transparent);
 }
 
-.title{
-text-align:center;
-font-size:30px;
-font-weight:800;
-margin-bottom:25px
+/* نورهای شناور */
+.glow{
+    position:fixed;
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    filter:blur(100px);
+    opacity:.18;
+    pointer-events:none;
+    animation:float 8s ease-in-out infinite alternate;
 }
 
+.glow.one{
+    background:#2563eb;
+    top:-100px;
+    left:-100px;
+}
+
+.glow.two{
+    background:#06b6d4;
+    right:-120px;
+    top:40%;
+    animation-delay:2s;
+}
+
+.glow.three{
+    background:#7c3aed;
+    bottom:-120px;
+    left:30%;
+    animation-delay:4s;
+}
+
+@keyframes float{
+    from{transform:translate(0,0)}
+    to{transform:translate(40px,30px)}
+}
+
+/* کانتینر */
+.container{
+    width:min(100%,1000px);
+    margin:auto;
+    padding:35px 18px 60px;
+}
+
+/* هدر */
+.hero{
+    text-align:center;
+    padding:35px 15px 30px;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    padding:8px 15px;
+    border-radius:999px;
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(15px);
+    font-size:13px;
+    color:#cbd5e1;
+    margin-bottom:18px;
+}
+
+.live-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#22c55e;
+    box-shadow:0 0 12px #22c55e;
+    animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:.4;transform:scale(.7)}
+}
+
+.hero h1{
+    font-size:clamp(32px,7vw,58px);
+    font-weight:950;
+    letter-spacing:-2px;
+    line-height:1.1;
+
+    background:linear-gradient(
+        100deg,
+        #fff,
+        #93c5fd,
+        #67e8f9,
+        #fff
+    );
+
+    background-size:300%;
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    animation:titleGradient 5s linear infinite;
+}
+
+@keyframes titleGradient{
+    to{background-position:300% center}
+}
+
+.hero p{
+    margin-top:14px;
+    color:#94a3b8;
+    font-size:15px;
+}
+
+/* بخش */
+.section{
+    margin-top:35px;
+}
+
+.section-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:15px;
+    color:#e2e8f0;
+    font-size:19px;
+    font-weight:800;
+}
+
+.section-title span{
+    font-size:22px;
+}
+
+/* گرید */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:15px;
+}
+
+/* کارت */
 .currency{
-background:rgba(255,255,255,.08);
-border-radius:22px;
-padding:18px;
-margin-bottom:15px;
-overflow:hidden;
-transition:.3s;
+    position:relative;
+    overflow:hidden;
+
+    padding:20px;
+    min-height:170px;
+
+    border-radius:25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.11),
+            rgba(255,255,255,.035)
+        );
+
+    border:1px solid rgba(255,255,255,.12);
+
+    backdrop-filter:blur(25px);
+    -webkit-backdrop-filter:blur(25px);
+
+    box-shadow:
+        0 15px 45px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.08);
+
+    opacity:0;
+    transform:translateY(60px) scale(.94);
+    transition:
+        opacity .7s ease,
+        transform .7s cubic-bezier(.2,.8,.2,1),
+        border-color .3s,
+        box-shadow .3s;
+}
+
+.currency.show{
+    opacity:1;
+    transform:translateY(0) scale(1);
 }
 
 .currency:hover{
-transform:translateY(-4px)
+    transform:translateY(-7px) scale(1.015);
+    border-color:rgba(96,165,250,.4);
+
+    box-shadow:
+        0 25px 60px rgba(0,0,0,.4),
+        0 0 30px rgba(37,99,235,.12),
+        inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+/* نور کارت */
+.currency::before{
+    content:"";
+    position:absolute;
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    background:var(--glow,#3b82f6);
+    filter:blur(70px);
+    opacity:.13;
+    top:-70px;
+    right:-50px;
+    pointer-events:none;
+}
+
+.currency::after{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-100%;
+    width:60%;
+    height:100%;
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.08),
+        transparent
+    );
+    transform:skewX(-20deg);
+    transition:.7s;
+}
+
+.currency:hover::after{
+    left:130%;
+}
+
+/* بالای کارت */
+.card-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
 }
 
 .name{
-font-size:18px;
-opacity:.9
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#e2e8f0;
+    font-size:15px;
+    font-weight:750;
 }
 
+.icon{
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:13px;
+
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.09);
+
+    font-size:19px;
+}
+
+.tag{
+    font-size:10px;
+    padding:5px 8px;
+    border-radius:8px;
+    background:rgba(34,197,94,.1);
+    color:#86efac;
+    border:1px solid rgba(34,197,94,.15);
+}
+
+/* قیمت */
 .value{
-font-size:38px;
-font-weight:900;
-margin-top:12px;
-text-shadow:0 0 15px rgba(96,165,250,.4);
-direction:ltr;
-text-align:right;
+    margin-top:20px;
+
+    font-size:clamp(23px,5vw,34px);
+    font-weight:950;
+    letter-spacing:-1px;
+
+    color:#fff;
+
+    text-shadow:
+        0 0 20px rgba(96,165,250,.25);
 }
 
 .value.animate{
-animation:pop .45s ease;
+    animation:pricePop .5s ease;
 }
 
-@keyframes pop{
-0%{
-opacity:0;
-transform:translateY(30px) scale(.8);
-filter:blur(5px)
-}
-50%{
-transform:translateY(-6px) scale(1.1)
-}
-100%{
-opacity:1;
-transform:translateY(0) scale(1)
-}
+@keyframes pricePop{
+    0%{
+        opacity:0;
+        transform:translateY(15px) scale(.85);
+        filter:blur(6px);
+    }
+
+    60%{
+        transform:translateY(-3px) scale(1.04);
+    }
+
+    100%{
+        opacity:1;
+        transform:translateY(0) scale(1);
+        filter:blur(0);
+    }
 }
 
 .unit{
-opacity:.7;
-margin-top:6px
+    margin-top:6px;
+    color:#64748b;
+    font-size:12px;
 }
 
-.time{
-text-align:center;
-margin-top:15px;
-opacity:.8;
-font-size:14px
+/* وضعیت */
+.status{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    margin:30px auto 0;
+    width:max-content;
+
+    padding:9px 14px;
+    border-radius:999px;
+
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+
+    color:#94a3b8;
+    font-size:12px;
 }
 
+.status-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#22c55e;
+    box-shadow:0 0 10px #22c55e;
+}
+
+/* دکمه */
 .btn{
-width:100%;
-margin-top:20px;
-border:none;
-border-radius:18px;
-padding:15px;
-font-size:17px;
-font-weight:700;
-cursor:pointer;
-background:linear-gradient(135deg,#2563eb,#06b6d4);
-color:#fff;
+    width:100%;
+    margin-top:18px;
+
+    border:none;
+    border-radius:20px;
+
+    padding:17px;
+
+    color:#fff;
+    font-size:16px;
+    font-weight:850;
+
+    cursor:pointer;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #0891b2,
+            #2563eb
+        );
+
+    background-size:200%;
+
+    box-shadow:
+        0 12px 30px rgba(37,99,235,.25);
+
+    transition:.3s;
 }
 
-.error{
-color:#ffb4b4
+.btn:hover{
+    background-position:100% center;
+    transform:translateY(-3px);
+    box-shadow:
+        0 18px 40px rgba(37,99,235,.35);
 }
 
+.btn:active{
+    transform:scale(.97);
+}
+
+/* فوتر */
 .credit{
-text-align:center;
-margin-top:22px;
-color:rgba(255,255,255,.65);
-font-size:14px
+    text-align:center;
+    margin-top:40px;
+    color:#64748b;
+    font-size:12px;
 }
 
 .credit span{
-display:block;
-margin-top:6px;
-font-size:19px;
-font-weight:900;
-background:linear-gradient(90deg,#60a5fa,#22d3ee,#38bdf8);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
+    display:block;
+    margin-top:7px;
+
+    font-size:17px;
+    font-weight:950;
+
+    background:linear-gradient(
+        90deg,
+        #60a5fa,
+        #22d3ee,
+        #a78bfa,
+        #60a5fa
+    );
+
+    background-size:250%;
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    animation:titleGradient 4s linear infinite;
+}
+
+.error{
+    color:#fca5a5!important;
+}
+
+/* موبایل */
+@media(max-width:500px){
+
+    .container{
+        padding:20px 12px 45px;
+    }
+
+    .hero{
+        padding-top:25px;
+    }
+
+    .hero h1{
+        font-size:34px;
+    }
+
+    .hero p{
+        font-size:13px;
+    }
+
+    .grid{
+        gap:10px;
+    }
+
+    .currency{
+        min-height:155px;
+        padding:15px;
+        border-radius:20px;
+    }
+
+    .icon{
+        width:34px;
+        height:34px;
+        font-size:17px;
+    }
+
+    .name{
+        font-size:13px;
+    }
+
+    .tag{
+        display:none;
+    }
+
+    .value{
+        font-size:22px;
+        margin-top:18px;
+    }
+
+    .unit{
+        font-size:10px;
+    }
+}
+
+/* موبایل خیلی کوچک */
+@media(max-width:350px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .currency{
+        min-height:150px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="glow one"></div>
+<div class="glow two"></div>
+<div class="glow three"></div>
 
-<div class="title">💱 قیمت لحظه‌ای بازار</div>
+<div class="container">
 
+    <header class="hero">
 
-<!-- دلار -->
-<div class="currency">
-<div class="name">💵 دلار آمریکا</div>
-<div class="value" id="usd">...</div>
-<div class="unit">تومان</div>
-</div>
+        <div class="badge">
+            <span class="live-dot"></span>
+            بازار آنلاین و لحظه‌ای
+        </div>
 
+        <h1>💱 قیمت لحظه‌ای بازار</h1>
 
-<!-- یورو -->
-<div class="currency">
-<div class="name">💶 یورو</div>
-<div class="value" id="eur">...</div>
-<div class="unit">تومان</div>
-</div>
+        <p>
+            ارز، کریپتو، طلا و سکه در یک نگاه
+        </p>
 
-
-<!-- درهم -->
-<div class="currency">
-<div class="name">🇦🇪 درهم امارات</div>
-<div class="value" id="aed">...</div>
-<div class="unit">تومان</div>
-</div>
+    </header>
 
 
-<!-- ریال عمان -->
-<div class="currency">
-<div class="name">🇴🇲 ریال عمان</div>
-<div class="value" id="omr">...</div>
-<div class="unit">تومان</div>
-</div>
+    <!-- ارزها -->
+    <section class="section">
+
+        <div class="section-title">
+            <span>💵</span>
+            ارزهای جهانی
+        </div>
+
+        <div class="grid">
+
+            <div class="currency" style="--glow:#3b82f6">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">🇺🇸</div>
+                        دلار آمریکا
+                    </div>
+                    <div class="tag">USD</div>
+                </div>
+
+                <div class="value" id="usd">...</div>
+                <div class="unit">تومان</div>
+            </div>
 
 
-<!-- پوند -->
-<div class="currency">
-<div class="name">🇬🇧 پوند انگلیس</div>
-<div class="value" id="gbp">...</div>
-<div class="unit">تومان</div>
-</div>
+            <div class="currency" style="--glow:#22c55e">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">🇪🇺</div>
+                        یورو
+                    </div>
+                    <div class="tag">EUR</div>
+                </div>
+
+                <div class="value" id="eur">...</div>
+                <div class="unit">تومان</div>
+            </div>
 
 
-<!-- تتر -->
-<div class="currency">
-<div class="name">₮ تتر USDT</div>
-<div class="value" id="usdt">...</div>
-<div class="unit">تومان</div>
-</div>
+            <div class="currency" style="--glow:#06b6d4">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">🇦🇪</div>
+                        درهم امارات
+                    </div>
+                    <div class="tag">AED</div>
+                </div>
+
+                <div class="value" id="aed">...</div>
+                <div class="unit">تومان</div>
+            </div>
 
 
-<!-- بیت کوین -->
-<div class="currency">
-<div class="name">₿ بیت‌کوین</div>
-<div class="value" id="btc">...</div>
-<div class="unit">تومان</div>
-</div>
+            <div class="currency" style="--glow:#f97316">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">🇴🇲</div>
+                        ریال عمان
+                    </div>
+                    <div class="tag">OMR</div>
+                </div>
+
+                <div class="value" id="omr">...</div>
+                <div class="unit">تومان</div>
+            </div>
 
 
-<!-- اتریوم -->
-<div class="currency">
-<div class="name">Ξ اتریوم</div>
-<div class="value" id="eth">...</div>
-<div class="unit">تومان</div>
-</div>
+            <div class="currency" style="--glow:#ef4444">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">🇬🇧</div>
+                        پوند انگلیس
+                    </div>
+                    <div class="tag">GBP</div>
+                </div>
+
+                <div class="value" id="gbp">...</div>
+                <div class="unit">تومان</div>
+            </div>
+
+        </div>
+    </section>
 
 
-<!-- BNB -->
-<div class="currency">
-<div class="name">🟠 BNB</div>
-<div class="value" id="bnb">...</div>
-<div class="unit">تومان</div>
-</div>
+    <!-- کریپتو -->
+    <section class="section">
+
+        <div class="section-title">
+            <span>₿</span>
+            ارزهای دیجیتال
+        </div>
+
+        <div class="grid">
+
+            <div class="currency" style="--glow:#f7931a">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">₿</div>
+                        بیت‌کوین
+                    </div>
+                    <div class="tag">BTC</div>
+                </div>
+
+                <div class="value" id="btc">...</div>
+                <div class="unit">تومان</div>
+            </div>
 
 
-<!-- سولانا -->
-<div class="currency">
-<div class="name">◎ سولانا</div>
-<div class="value" id="sol">...</div>
-<div class="unit">تومان</div>
-</div>
+            <div class="currency" style="--glow:#627eea">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">Ξ</div>
+                        اتریوم
+                    </div>
+                    <div class="tag">ETH</div>
+                </div>
+
+                <div class="value" id="eth">...</div>
+                <div class="unit">تومان</div>
+            </div>
 
 
-<!-- دوج کوین -->
-<div class="currency">
-<div class="name">🐕 دوج‌کوین</div>
-<div class="value" id="doge">...</div>
-<div class="unit">تومان</div>
-</div>
+            <div class="currency" style="--glow:#22d3ee">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">₮</div>
+                        تتر
+                    </div>
+                    <div class="tag">USDT</div>
+                </div>
+
+                <div class="value" id="usdt">...</div>
+                <div class="unit">تومان</div>
+            </div>
 
 
-<!-- طلای 18 -->
-<div class="currency">
-<div class="name">🥇 طلای ۱۸ عیار</div>
-<div class="value" id="gold18">...</div>
-<div class="unit">تومان / گرم</div>
-</div>
+            <div class="currency" style="--glow:#f0b90b">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">◆</div>
+                        بایننس کوین
+                    </div>
+                    <div class="tag">BNB</div>
+                </div>
+
+                <div class="value" id="bnb">...</div>
+                <div class="unit">تومان</div>
+            </div>
 
 
-<!-- سکه امامی -->
-<div class="currency">
-<div class="name">🪙 سکه امامی</div>
-<div class="value" id="sekkeh">...</div>
-<div class="unit">تومان</div>
-</div>
+            <div class="currency" style="--glow:#9945ff">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">◎</div>
+                        سولانا
+                    </div>
+                    <div class="tag">SOL</div>
+                </div>
+
+                <div class="value" id="sol">...</div>
+                <div class="unit">تومان</div>
+            </div>
 
 
-<!-- نیم سکه -->
-<div class="currency">
-<div class="name">🪙 نیم‌سکه</div>
-<div class="value" id="nim">...</div>
-<div class="unit">تومان</div>
-</div>
+            <div class="currency" style="--glow:#c2a633">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">Ð</div>
+                        دوج‌کوین
+                    </div>
+                    <div class="tag">DOGE</div>
+                </div>
+
+                <div class="value" id="doge">...</div>
+                <div class="unit">تومان</div>
+            </div>
+
+        </div>
+    </section>
 
 
-<!-- ربع سکه -->
-<div class="currency">
-<div class="name">🪙 ربع‌سکه</div>
-<div class="value" id="rob">...</div>
-<div class="unit">تومان</div>
-</div>
+    <!-- طلا -->
+    <section class="section">
+
+        <div class="section-title">
+            <span>🥇</span>
+            طلا و فلزات
+        </div>
+
+        <div class="grid">
+
+            <div class="currency" style="--glow:#facc15">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">🥇</div>
+                        طلای ۱۸ عیار
+                    </div>
+                    <div class="tag">18K</div>
+                </div>
+
+                <div class="value" id="gold18">...</div>
+                <div class="unit">تومان / گرم</div>
+            </div>
 
 
-<!-- سکه گرمی -->
-<div class="currency">
-<div class="name">🪙 سکه گرمی</div>
-<div class="value" id="gerami">...</div>
-<div class="unit">تومان</div>
-</div>
+            <div class="currency" style="--glow:#94a3b8">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">🥈</div>
+                        نقره
+                    </div>
+                    <div class="tag">XAG</div>
+                </div>
+
+                <div class="value" id="silver">...</div>
+                <div class="unit">تومان / اونس</div>
+            </div>
+
+        </div>
+    </section>
 
 
-<!-- نقره -->
-<div class="currency">
-<div class="name">🥈 نقره</div>
-<div class="value" id="silver">...</div>
-<div class="unit">تومان</div>
-</div>
+    <!-- سکه -->
+    <section class="section">
+
+        <div class="section-title">
+            <span>🪙</span>
+            سکه
+        </div>
+
+        <div class="grid">
+
+            <div class="currency" style="--glow:#fbbf24">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">🪙</div>
+                        سکه
+                    </div>
+                    <div class="tag">COIN</div>
+                </div>
+
+                <div class="value" id="sekkeh">...</div>
+                <div class="unit">تومان</div>
+            </div>
 
 
-<div class="time" id="time">
-در حال دریافت اطلاعات...
-</div>
+            <div class="currency" style="--glow:#f59e0b">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">🟡</div>
+                        نیم سکه
+                    </div>
+                    <div class="tag">HALF</div>
+                </div>
+
+                <div class="value" id="nim">...</div>
+                <div class="unit">تومان</div>
+            </div>
 
 
-<button class="btn" onclick="loadPrices()">
-بروزرسانی
-</button>
+            <div class="currency" style="--glow:#d97706">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">🟠</div>
+                        ربع سکه
+                    </div>
+                    <div class="tag">QUARTER</div>
+                </div>
+
+                <div class="value" id="rob">...</div>
+                <div class="unit">تومان</div>
+            </div>
 
 
-<div class="credit">
-ساخته شده توسط
-<span>Mehdi Dastbord</span>
-</div>
+            <div class="currency" style="--glow:#eab308">
+                <div class="card-top">
+                    <div class="name">
+                        <div class="icon">🔸</div>
+                        سکه گرمی
+                    </div>
+                    <div class="tag">GRAM</div>
+                </div>
+
+                <div class="value" id="gerami">...</div>
+                <div class="unit">تومان</div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <div class="status">
+        <span class="status-dot"></span>
+        <span id="time">در حال دریافت اطلاعات...</span>
+    </div>
+
+    <button class="btn" onclick="loadPrices()">
+        🔄 بروزرسانی قیمت‌ها
+    </button>
+
+
+    <div class="credit">
+        ساخته شده توسط
+        <span>Mehdi Dastbord</span>
+    </div>
 
 </div>
 
 
 <script>
 
+/* =========================
+   Navasan API
+========================= */
+
 const API_KEY="freeL8rmnJQvTBwmj6aMsQYTtU1Yg1yP";
 
 
-function formatPrice(v){
+/* =========================
+   فرمت قیمت
+========================= */
 
-    const number=Number(v);
+function formatPrice(value){
 
-    if(isNaN(number)) return "...";
+    const number=Number(value);
+
+    if(!Number.isFinite(number)){
+        return "...";
+    }
 
     return Math.round(number).toLocaleString("en-US");
-
 }
 
 
-function animateNumber(el,endValue,duration=1000){
+/* =========================
+   انیمیشن قیمت
+========================= */
+
+function animateNumber(element,endValue,duration=900){
+
+    if(!element) return;
 
     const start=0;
     const startTime=performance.now();
 
-    el.classList.remove("animate");
+    element.classList.remove("animate");
 
-    void el.offsetWidth;
+    void element.offsetWidth;
 
-    el.classList.add("animate");
+    element.classList.add("animate");
 
 
     function update(now){
@@ -329,21 +903,26 @@ function animateNumber(el,endValue,duration=1000){
 
         const ease=1-Math.pow(1-progress,3);
 
-        const value=start+(endValue-start)*ease;
+        const value=
+            start+
+            (endValue-start)*ease;
 
 
         if(progress<0.25){
 
-            const random=Math.floor(
-                Math.random()*endValue
-            );
+            const random=
+                Math.floor(
+                    Math.random()*
+                    Math.max(endValue,1)
+                );
 
-            el.textContent=formatPrice(random);
+            element.textContent=
+                formatPrice(random);
 
         }else{
 
-            el.textContent=formatPrice(value);
-
+            element.textContent=
+                formatPrice(value);
         }
 
 
@@ -353,136 +932,263 @@ function animateNumber(el,endValue,duration=1000){
 
         }else{
 
-            el.textContent=formatPrice(endValue);
-
+            element.textContent=
+                formatPrice(endValue);
         }
-
     }
 
-
     requestAnimationFrame(update);
-
 }
 
+
+/* =========================
+   نمایش قیمت
+========================= */
 
 function showPrice(id,value){
 
-    if(value===undefined || value===null) return;
+    if(value===undefined || value===null){
+        return;
+    }
 
     const number=Number(value);
 
-    if(!isNaN(number)){
-
-        animateNumber(
-            document.getElementById(id),
-            number
-        );
-
+    if(!Number.isFinite(number)){
+        return;
     }
 
+    animateNumber(
+        document.getElementById(id),
+        number
+    );
 }
 
 
+/* =========================
+   دریافت اطلاعات
+========================= */
+
 async function loadPrices(){
+
+    const timeElement=
+        document.getElementById("time");
 
     try{
 
-        const response=await fetch(
-            "https://api.navasan.tech/latest/?api_key="+API_KEY
-        );
+        timeElement.textContent=
+            "در حال بروزرسانی...";
+
+
+        const response=
+            await fetch(
+                "https://api.navasan.tech/latest/?api_key="+
+                API_KEY
+            );
 
 
         if(!response.ok){
 
             throw new Error(
-                "API Error: "+response.status
+                "API Error: "+
+                response.status
             );
-
         }
 
 
-        const data=await response.json();
+        const data=
+            await response.json();
 
 
-        console.log("Navasan API:",data);
+        console.log(
+            "Navasan API:",
+            data
+        );
 
 
-        /* =========================
-           ارزها
-        ========================= */
+        /* ارز */
 
-        showPrice("usd",data.usd_sell?.value);
+        showPrice(
+            "usd",
+            data.usd_sell?.value
+        );
 
-        showPrice("eur",data.eur?.value);
+        showPrice(
+            "eur",
+            data.eur?.value
+        );
 
-        showPrice("aed",data.aed_sell?.value);
+        showPrice(
+            "aed",
+            data.aed_sell?.value
+        );
 
-        showPrice("omr",data.omr?.value);
+        showPrice(
+            "omr",
+            data.omr?.value
+        );
 
-        showPrice("gbp",data.gbp?.value);
-
-
-        /* =========================
-           کریپتو
-        ========================= */
-
-        showPrice("usdt",data.usdt?.value);
-
-        showPrice("btc",data.btc?.value);
-
-        showPrice("eth",data.eth?.value);
-
-        showPrice("bnb",data.bnb?.value);
-
-        showPrice("sol",data.sol?.value);
-
-        showPrice("doge",data.doge?.value);
+        showPrice(
+            "gbp",
+            data.gbp?.value
+        );
 
 
-        /* =========================
-           طلا و سکه
-        ========================= */
+        /* کریپتو */
 
-        showPrice("gold18",data["18ayar"]?.value);
+        showPrice(
+            "btc",
+            data.btc?.value
+        );
 
-        showPrice("sekkeh",data.sekkeh?.value);
+        showPrice(
+            "eth",
+            data.eth?.value
+        );
 
-        showPrice("nim",data.nim?.value);
+        showPrice(
+            "usdt",
+            data.usdt?.value
+        );
 
-        showPrice("rob",data.rob?.value);
+        showPrice(
+            "bnb",
+            data.bnb?.value
+        );
 
-        showPrice("gerami",data.gerami?.value);
+        showPrice(
+            "sol",
+            data.sol?.value
+        );
+
+        showPrice(
+            "doge",
+            data.doge?.value
+        );
 
 
-        /* =========================
-           نقره
-        ========================= */
+        /* طلا */
 
-        showPrice("silver",data.xag?.value);
+        showPrice(
+            "gold18",
+            data["18ayar"]?.value
+        );
+
+        showPrice(
+            "silver",
+            data.xag?.value
+        );
 
 
-        /* زمان */
+        /* سکه */
 
-        document.getElementById("time").textContent=
-        "آخرین بروزرسانی: "+
-        new Date().toLocaleTimeString("fa-IR");
+        showPrice(
+            "sekkeh",
+            data.sekkeh?.value
+        );
+
+        showPrice(
+            "nim",
+            data.nim?.value
+        );
+
+        showPrice(
+            "rob",
+            data.rob?.value
+        );
+
+        showPrice(
+            "gerami",
+            data.gerami?.value
+        );
+
+
+        timeElement.innerHTML=
+            '<span class="status-dot"></span>'+
+            ' آخرین بروزرسانی: '+
+            new Date().toLocaleTimeString(
+                "fa-IR"
+            );
 
 
     }catch(error){
 
         console.error(error);
 
-        document.getElementById("time").innerHTML=
-        '<span class="error">خطا در دریافت اطلاعات</span>';
-
+        timeElement.innerHTML=
+            '<span class="error">'+
+            '❌ خطا در دریافت اطلاعات'+
+            '</span>';
     }
-
 }
 
 
+/* =========================
+   ظاهر شدن کارت‌ها هنگام اسکرول
+========================= */
+
+const observer=
+    new IntersectionObserver(
+
+        (entries)=>{
+
+            entries.forEach(
+                (entry)=>{
+
+                    if(entry.isIntersecting){
+
+                        entry.target.classList.add(
+                            "show"
+                        );
+
+                        observer.unobserve(
+                            entry.target
+                        );
+                    }
+
+                }
+            );
+
+        },
+
+        {
+            threshold:0.12,
+            rootMargin:"0px 0px -40px 0px"
+        }
+    );
+
+
+document
+    .querySelectorAll(".currency")
+    .forEach(
+        (card,index)=>{
+
+            /*
+             * کمی تأخیر برای کارت‌های
+             * کنار هم
+             */
+
+            card.style.transitionDelay=
+                (index%2)*0.08+
+                "s";
+
+            observer.observe(card);
+        }
+    );
+
+
+/* =========================
+   شروع
+========================= */
+
 loadPrices();
 
-setInterval(loadPrices,60000);
+
+/* هر 60 ثانیه */
+
+setInterval(
+    loadPrices,
+    60000
+);
 
 </script>
 
